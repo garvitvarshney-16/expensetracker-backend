@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 
-export const sequelize = new Sequelize("expense", "root", "", {
-  host: "localhost",
+export const sequelize = new Sequelize("u209925293_scala", "u209925293_sala", "Scalaproject@123", {
+  host: "srv1127.hstgr.io",
   logging: false,
   dialect: "mysql",
 });
@@ -12,7 +12,7 @@ export const connectDB = async () => {
     const connection = await sequelize.authenticate()
     console.log("Connection has been established successfully.");
   } catch (error) {
-    console.log("Mysql connection error ", error);
+    console.log("MongoDB connection error ", error);
     process.exit(1);
   }
 }
