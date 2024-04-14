@@ -7,7 +7,7 @@ export const Transaction = sequelize.define("Transaction", {
     allowNull: false,
   },
   type: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM("credit", "expense"),
     allowNull: false,
   },
   amount: {

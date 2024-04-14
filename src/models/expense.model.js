@@ -10,6 +10,10 @@ export const Expense = sequelize.define("Expense", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  type: {
+    type: DataTypes.ENUM("credit", "expense"),
+    allowNull: false,
+  },
   date: {
     type: DataTypes.DATE,
     allowNull: false,

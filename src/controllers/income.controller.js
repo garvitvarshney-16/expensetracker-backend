@@ -4,10 +4,10 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 
 export const addIncome = async (req, res) => {
-  const { amount, tag, date, userId, description } = req.body;
+  const { amount, tag, type, date, userId, description } = req.body;
 
   try {
-    if (!amount || !tag || !date || !userId || !description) {
+    if (!amount || !tag || !date || !userId || !description || !type) {
       throw new ApiError(400, "Enter all details");
     }
 
@@ -17,6 +17,7 @@ export const addIncome = async (req, res) => {
       const income = await Income.create({
         amount,
         tag,
+        type,
         date,
         userId,
         description,
@@ -24,7 +25,7 @@ export const addIncome = async (req, res) => {
 
       const transaction = await Transaction.create({
         userId,
-        type: tag,
+        type,
         amount,
         date,
         description,
