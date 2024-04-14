@@ -12,7 +12,7 @@ export const connectDB = async () => {
     const connection = await sequelize.authenticate()
     console.log("Connection has been established successfully.");
   } catch (error) {
-    console.log("MongoDB connection error ", error);
+    console.log("Mysql connection error ", error);
     process.exit(1);
   }
 }
