@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 
-export const sequelize = new Sequelize("u209925293_scala", "u209925293_sala", "Scalaproject@123", {
-  host: "srv1127.hstgr.io",
+export const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
   logging: false,
   dialect: "mysql",
 });
