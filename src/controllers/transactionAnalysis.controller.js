@@ -1,6 +1,31 @@
 import { Op } from "sequelize";
 import { sequelize } from "../db/index.js";
 import { Expense } from "../models/expense.model.js";
+import { Transaction } from "../models/transaction.model.js";
+
+export const getRecentTransaction = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const recentTransactions = await Transaction.findAll({
+      where: { userId },
+      order: [["date", "DESC"]],
+      limit: 5,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Recent transactions retrieved successfully",
+      transaction: recentTransactions,
+    });
+  } catch (error) {
+    console.error("Error retrieving recent transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 export const calculateMonthlyExpenditure = async (req, res) => {
   const { userId, year, month } = req.body;

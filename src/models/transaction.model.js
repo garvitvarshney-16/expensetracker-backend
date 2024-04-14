@@ -2,8 +2,12 @@ import { sequelize } from "../db/index.js";
 import { DataTypes } from "sequelize";
 
 export const Transaction = sequelize.define("Transaction", {
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   type: {
-    type: DataTypes.ENUM("income", "expense"),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   amount: {
@@ -14,12 +18,8 @@ export const Transaction = sequelize.define("Transaction", {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  category: {
+  description: {
     type: DataTypes.STRING,
-    allowNull: false,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
     allowNull: false,
   },
 });
