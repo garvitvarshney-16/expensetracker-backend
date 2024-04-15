@@ -1,5 +1,6 @@
 import Express from "express";
 import cors from "cors";
+import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { User } from "./models/user.model.js";
 import { Expense } from "./models/expense.model.js";
@@ -12,6 +13,9 @@ import IncomeRoute from "./routes/income.routes.js";
 import ExpenseRoute from "./routes/expense.routes.js";
 import SavingRoute from "./routes/saving.routes.js";
 import TransactionRoute from "./routes/transaction.routes.js";
+import { MonthlyExpenseGoal } from "./models/monthlyexpensegoal.model.js";
+import MonthlyExpenseGoalRoute from "./routes/monthlyexpensegoal.routes.js"
+import AIModelRoute from "./routes/aimodel.routes.js"
 const app = Express();
 
 app.use(
@@ -25,6 +29,7 @@ app.use(Express.json({ limit: "16kb" }));
 app.use(Express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(Express.static("public"));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 // routes
 app.use("/api/v1/users", UserRoute);
@@ -32,6 +37,8 @@ app.use("/api/v1/income", IncomeRoute);
 app.use("/api/v1/expense", ExpenseRoute);
 app.use("/api/v1/saving", SavingRoute);
 app.use("/api/v1/transaction", TransactionRoute);
+app.use("/api/v1/monthlyexpensegoal", MonthlyExpenseGoalRoute)
+app.use("/api/v1", AIModelRoute)
 
 // DB model creation
 User.sync();
@@ -40,5 +47,6 @@ Budget.sync({ alter: true });
 Saving.sync({ alter: true });
 Transaction.sync({ alter: true });
 Income.sync({ alter: true });
+MonthlyExpenseGoal.sync({ alter: true });
 
 export { app };
