@@ -4,7 +4,7 @@ import { calculateMonthlySavings, calculateYearlySavings } from "../controllers/
 const router = Express.Router()
 
 router.post("/monthSaving", calculateMonthlySavings)
-router.get("/yearlySaving", calculateYearlySavings)
+router.post("/yearlySaving", calculateYearlySavings)
 
 
 export default router;

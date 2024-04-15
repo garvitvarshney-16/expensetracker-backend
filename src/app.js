@@ -34,7 +34,7 @@ app.use("/api/v1/saving", SavingRoute);
 app.use("/api/v1/transaction", TransactionRoute);
 
 // DB model creation
-User.sync({ alter: true });
+User.sync();
 Expense.sync({ alter: true });
 Budget.sync({ alter: true });
 Saving.sync({ alter: true });

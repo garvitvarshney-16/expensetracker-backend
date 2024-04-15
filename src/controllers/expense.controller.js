@@ -54,4 +54,96 @@ export const addExpense = async (req, res) => {
   }
 };
 
-export const deleteExpense = async (req, res) => {};
+export const getExpense = async (req, res) => {
+  const { userId } = req.params; // Assuming userId is passed in the URL parameters
+
+  try {
+    // Find expenses for the user
+    const userExpenses = await Expense.findAll({
+      where: {
+        userId,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Expense details retrieved successfully",
+      expenses: userExpenses,
+    });
+  } catch (error) {
+    console.error("Error fetching expense details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const updateExpense = async (req, res) => {
+  const { id } = req.params; // Assuming expenseId is passed in the URL parameters
+  const { amount, tag, type, date, userId, description } = req.body;
+
+  try {
+    // Check if the expense exists
+    const existingExpense = await Expense.findByPk(id);
+    if (!existingExpense) {
+      return res.status(404).json({
+        success: false,
+        message: "Expense not found",
+      });
+    }
+
+    // Update expense details
+    existingExpense.amount = amount ?? existingExpense.amount;
+    existingExpense.tag = tag ?? existingExpense.tag;
+    existingExpense.type = type ?? existingExpense.type;
+    existingExpense.date = date ?? existingExpense.date;
+    existingExpense.userId = userId ?? existingExpense.userId;
+    existingExpense.description = description ?? existingExpense.description;
+
+    // Save the updated expense details
+    await existingExpense.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Expense details updated successfully",
+      expense: existingExpense,
+    });
+  } catch (error) {
+    console.error("Error updating expense details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const deleteExpense = async (req, res) => {
+  const { id } = req.params; // Assuming expenseId is passed in the URL parameters
+
+  try {
+    // Find the expense record by ID
+    const expense = await Expense.findByPk(id);
+
+    if (!expense) {
+      return res.status(404).json({
+        success: false,
+        message: "Expense not found",
+      });
+    }
+
+    // Delete the expense record
+    await expense.destroy();
+
+    return res.status(200).json({
+      success: true,
+      message: "Expense deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

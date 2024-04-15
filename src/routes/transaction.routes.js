@@ -3,9 +3,9 @@ import { calculateMonthlyExpenditure, generateCategoryComparisons, getRecentTran
 
 const router = Express.Router()
 
-router.get("/calculateMonthlyExpenditure", calculateMonthlyExpenditure)
-router.get("/generateCategoryComparisons", generateCategoryComparisons)
-router.get("/getRecentTransaction", getRecentTransaction);
+router.post("/calculateMonthlyExpenditure", calculateMonthlyExpenditure)
+router.post("/generateCategoryComparisons", generateCategoryComparisons)
+router.post("/getRecentTransaction", getRecentTransaction);
 
 
 
