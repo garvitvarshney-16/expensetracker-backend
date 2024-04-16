@@ -40,7 +40,7 @@ app.use("/api/v1/transaction", TransactionRoute);
 app.use("/api/v1/monthlyexpensegoal", MonthlyExpenseGoalRoute)
 app.use("/api/v1", AIModelRoute)
 
-// DB model creation
+// // DB model creation
 User.sync();
 Expense.sync({ alter: true });
 Budget.sync({ alter: true });

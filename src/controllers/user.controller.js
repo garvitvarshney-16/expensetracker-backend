@@ -4,38 +4,46 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 export const signInUser = async (req, res) => {
   try {
-    const { id, fullname, email, accessToken, profilePicture } = req.body;
+    const { fullname, email, accessToken, profilePicture } = req.body;
 
-    let user = await User.findByPk(id);
+    let existingUser = await User.findOne({ where: { email } });
 
-    if (user) {
+    if (existingUser) {
       return res.status(200).json({
         success: true,
-        message: `Welcome, ${user.fullname}`,
-        user,
+        message: `Welcome back, ${existingUser.fullname}`,
+        user: existingUser,
       });
     }
 
-    if (!id || !fullname || !email || !accessToken || !profilePicture) {
+    // If user does not exist, create a new user
+    if (!fullname || !email || !accessToken || !profilePicture) {
       throw new ApiError(400, "Enter all details");
     }
 
-    user = await User.create({
-      id,
+    const newUser = await User.create({
       fullname,
       email,
       accessToken,
       profilePicture,
     });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, user, "user registered successfully"));
+    return res.status(200).json({
+      success: true,
+      message: "User registered successfully",
+      user: newUser,
+    });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
+    if (error instanceof ApiError) {
+      return res
+        .status(error.statusCode)
+        .json({ success: false, message: error.message });
+    } else {
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
   }
 };
 
