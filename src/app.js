@@ -41,7 +41,7 @@ app.use("/api/v1/monthlyexpensegoal", MonthlyExpenseGoalRoute)
 app.use("/api/v1", AIModelRoute)
 
 // DB model creation
-User.sync({ alter: true });
+// User.sync({ alter: true });
 Expense.sync({ alter: true });
 Budget.sync({ alter: true });
 Saving.sync({ alter: true });

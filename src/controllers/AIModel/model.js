@@ -3,7 +3,7 @@ import { Expense } from "../../models/expense.model.js";
 import { Income } from "../../models/income.model.js";
 import { Saving } from "../../models/saving.model.js";
 
-const API = process.env.API;
+const API = process.env.API_KEY;
 const genAI = new GoogleGenerativeAI(API);
 
 export const suggestTips = async (req, res) => {
