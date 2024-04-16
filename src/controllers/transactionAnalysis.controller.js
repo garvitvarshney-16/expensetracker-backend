@@ -3,6 +3,7 @@ import { sequelize } from "../db/index.js";
 import { Expense } from "../models/expense.model.js";
 import { Transaction } from "../models/transaction.model.js";
 import { Saving } from "../models/saving.model.js";
+import { User } from "../models/user.model.js";
 
 export const getRecentTransaction = async (req, res) => {
   const { userId } = req.body;
@@ -101,6 +102,15 @@ export const getCurrentYearFinancialData = async (req, res) => {
   const { userId } = req.params;
 
   try {
+    // Check if the user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     // Get the current year and month
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
