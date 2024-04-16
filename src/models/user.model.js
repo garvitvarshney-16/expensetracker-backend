@@ -4,11 +4,6 @@ import { DataTypes } from "sequelize";
 export const User = sequelize.define(
   "User",
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-    },
     fullname: {
       type: DataTypes.STRING,
       allowNull: false,
