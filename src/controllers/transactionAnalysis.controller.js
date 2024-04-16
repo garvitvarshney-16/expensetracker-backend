@@ -1,4 +1,3 @@
-import moment from "moment";
 import { Op } from "sequelize";
 import { sequelize } from "../db/index.js";
 import { Expense } from "../models/expense.model.js";
@@ -100,22 +99,25 @@ export const generateCategoryComparisons = async (req, res) => {
 
 export const getCurrentYearFinancialData = async (req, res) => {
   const { userId } = req.params;
-  const currentYear = moment().year();
-  const currentMonth = moment().month() + 1;
 
   try {
-    // Fetch expenses and savings for the current year
+    // Get the current year and month
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+
+    // Conditionally fetch data for the current year and past months up to the current month
     const [expenses, savings] = await Promise.all([
       Expense.findAll({
-        where: {
-          userId,
-          date: {
-            [Op.between]: [
-              moment(`${currentYear}-01-01`, "YYYY-MM-DD"),
-              moment(`${currentYear}-${currentMonth}-31`, "YYYY-MM-DD"),
-            ],
-          },
-        },
+        where: sequelize.and(
+          sequelize.where(
+            sequelize.fn("YEAR", sequelize.col("date")),
+            currentYear
+          ),
+          sequelize.where(sequelize.fn("MONTH", sequelize.col("date")), {
+            [Op.lte]: currentMonth,
+          }), // Include data up to the current month
+          { userId }
+        ),
         attributes: [
           [sequelize.fn("MONTH", sequelize.col("date")), "month"],
           [sequelize.fn("SUM", sequelize.col("amount")), "totalExpense"],
@@ -124,11 +126,16 @@ export const getCurrentYearFinancialData = async (req, res) => {
         raw: true,
       }),
       Saving.findAll({
-        where: {
-          userId,
-          savingYear: currentYear,
-          savingMonth: { [Op.lte]: currentMonth },
-        },
+        where: sequelize.and(
+          sequelize.where(
+            sequelize.fn("YEAR", sequelize.col("savingYear")),
+            currentYear
+          ),
+          sequelize.where(sequelize.fn("MONTH", sequelize.col("savingMonth")), {
+            [Op.lte]: currentMonth,
+          }), // Include data up to the current month
+          { userId }
+        ),
         attributes: [
           [sequelize.fn("MONTH", sequelize.col("savingMonth")), "month"],
           [sequelize.fn("SUM", sequelize.col("savingAmount")), "totalSaving"],
@@ -157,11 +164,11 @@ export const getCurrentYearFinancialData = async (req, res) => {
     // Return the response
     return res.status(200).json({
       success: true,
-      message: "Current year's financial data retrieved successfully",
+      message: "Financial data retrieved successfully",
       data: financialData,
     });
   } catch (error) {
-    console.error("Error fetching current year's financial data:", error);
+    console.error("Error fetching financial data:", error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
