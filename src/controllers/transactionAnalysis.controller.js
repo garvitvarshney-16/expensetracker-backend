@@ -1,7 +1,9 @@
+import moment from "moment";
 import { Op } from "sequelize";
 import { sequelize } from "../db/index.js";
 import { Expense } from "../models/expense.model.js";
 import { Transaction } from "../models/transaction.model.js";
+import { Saving } from "../models/saving.model.js";
 
 export const getRecentTransaction = async (req, res) => {
   const { userId } = req.body;
@@ -89,6 +91,77 @@ export const generateCategoryComparisons = async (req, res) => {
     });
   } catch (error) {
     console.error("Error generating category-wise comparisons:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getCurrentYearFinancialData = async (req, res) => {
+  const { userId } = req.params;
+  const currentYear = moment().year();
+  const currentMonth = moment().month() + 1;
+
+  try {
+    // Fetch expenses and savings for the current year
+    const [expenses, savings] = await Promise.all([
+      Expense.findAll({
+        where: {
+          userId,
+          date: {
+            [Op.between]: [
+              moment(`${currentYear}-01-01`, "YYYY-MM-DD"),
+              moment(`${currentYear}-${currentMonth}-31`, "YYYY-MM-DD"),
+            ],
+          },
+        },
+        attributes: [
+          [sequelize.fn("MONTH", sequelize.col("date")), "month"],
+          [sequelize.fn("SUM", sequelize.col("amount")), "totalExpense"],
+        ],
+        group: [sequelize.fn("MONTH", sequelize.col("date"))],
+        raw: true,
+      }),
+      Saving.findAll({
+        where: {
+          userId,
+          savingYear: currentYear,
+          savingMonth: { [Op.lte]: currentMonth },
+        },
+        attributes: [
+          [sequelize.fn("MONTH", sequelize.col("savingMonth")), "month"],
+          [sequelize.fn("SUM", sequelize.col("savingAmount")), "totalSaving"],
+        ],
+        group: [sequelize.fn("MONTH", sequelize.col("savingMonth"))],
+        raw: true,
+      }),
+    ]);
+
+    // Prepare the response
+    const financialData = Array.from({ length: currentMonth }, (_, i) => {
+      const month = i + 1;
+      const expenseData = expenses.find((item) => item.month === month) || {
+        totalExpense: 0,
+      };
+      const savingData = savings.find((item) => item.month === month) || {
+        totalSaving: 0,
+      };
+      return {
+        month,
+        totalExpense: expenseData.totalExpense || 0,
+        totalSaving: savingData.totalSaving || 0,
+      };
+    });
+
+    // Return the response
+    return res.status(200).json({
+      success: true,
+      message: "Current year's financial data retrieved successfully",
+      data: financialData,
+    });
+  } catch (error) {
+    console.error("Error fetching current year's financial data:", error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",

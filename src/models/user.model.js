@@ -21,8 +21,8 @@ export const User = sequelize.define(
         isEmail: true,
       },
     },
-    dateOfBirth: {
-      type: DataTypes.DATEONLY,
+    accessToken: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     profilePicture: {

@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 export const signInUser = async (req, res) => {
   try {
-    const { id, fullname, email, dateOfBirth, profilePicture } = req.body;
+    const { id, fullname, email, accessToken, profilePicture } = req.body;
 
     let user = await User.findByPk(id);
 
@@ -16,7 +16,7 @@ export const signInUser = async (req, res) => {
       });
     }
 
-    if (!id || !fullname || !email || !dateOfBirth || !profilePicture) {
+    if (!id || !fullname || !email || !accessToken || !profilePicture) {
       throw new ApiError(400, "Enter all details");
     }
 
@@ -24,7 +24,7 @@ export const signInUser = async (req, res) => {
       id,
       fullname,
       email,
-      dateOfBirth,
+      accessToken,
       profilePicture,
     });
 
