@@ -1,3 +1,4 @@
+import { sequelize } from "../db/index.js";
 import { Expense } from "../models/expense.model.js";
 import { Transaction } from "../models/transaction.model.js";
 import { User } from "../models/user.model.js";
@@ -55,14 +56,22 @@ export const addExpense = async (req, res) => {
 };
 
 export const getExpense = async (req, res) => {
-  const { userId } = req.params; // Assuming userId is passed in the URL parameters
+  const { userId } = req.params;
 
   try {
-    // Find expenses for the user
     const userExpenses = await Expense.findAll({
       where: {
         userId,
       },
+      attributes: [
+        "id",
+        "amount",
+        [sequelize.fn("DATE_FORMAT", sequelize.col("date"), "%Y-%m-%d"), "date"],
+        "tag",
+        "type",
+        "description",
+        "userId",
+      ],
     });
 
     return res.status(200).json({
